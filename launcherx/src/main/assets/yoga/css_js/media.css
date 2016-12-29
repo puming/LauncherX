@@ -1,0 +1,308 @@
+@charset "utf-8";
+@import url("../css_js/webfonts/Droid_SansFall_back/stylesheet.css");
+
+
+.mask {       
+            position: absolute; 
+			top: 0px; 
+			filter: alpha(opacity=80); 
+			background-color: #101322;     
+            z-index: 1002; 
+			left: 0px;     
+            opacity:0.8; 
+            -moz-opacity:0.8;     
+  }  
+
+#header {
+	width: 2560px;
+	text-align: center;
+	margin-bottom: 35px;
+	border-bottom-width: 2px;
+	border-bottom-style: solid;
+	border-bottom-color: #1e212f;
+	height: 130px;
+}
+
+#header .navs {
+	width: 1860px;
+	padding-top: 46px;
+	padding-bottom: 46px;
+	margin-right: auto;
+	margin-left: auto;
+	height: 38px;
+}
+#header .navs .btns {
+	float: left;
+	padding-right: 52px;
+	padding-left: 52px;
+}
+#header .navs .btns a:link {
+	float: left;
+	font-family: "Droid SansFall back";
+	font-size: 36px;
+	line-height: 38px;
+	color: #FFF;
+	text-decoration: none;
+	display: block;
+}
+
+#header .navs .btns a:visited {
+	float: left;
+	font-family: "Droid SansFall back";
+	font-size: 36px;
+	line-height: 38px;
+	color: #FFF;
+	text-decoration: none;
+}
+#header .navs .btns a:hover {
+	float: left;
+	font-family: "Droid SansFall back";
+	font-size: 36px;
+	line-height: 38px;
+	color: #FFF;
+	text-decoration: none;
+}
+
+#banners {
+	height: 740px;
+	width: 2560px;
+}
+#banners .mess {
+	height: 740px;
+	width: 1900px;
+	margin-right: auto;
+	margin-left: auto;
+	position: relative;
+	background-image: url(../images/banner_01.jpg);
+	background-position: center center;
+}
+#banners .mess .texts {
+	height: 184px;
+	width: 1900px;
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+}
+#banners .mess .texts .btitle {
+	width: 500px;
+	position: absolute;
+	left: 50px;
+	top: 38px;
+	font-family: "Droid SansFall back";
+	font-size: 72px;
+	line-height: 72px;
+	color: #FFF;
+	margin-bottom: 16px;
+}
+#banners .mess .texts .jtitle {
+	position: absolute;
+	left: 50px;
+	top: 126px;
+	font-family: "Droid SansFall back";
+	font-size: 36px;
+	line-height: 36px;
+	color: #FFF;
+}
+#banners .mess .texts .pages {
+	position: absolute;
+	top: 40px;
+	right: 50px;
+}
+#banners .mess .texts .pages .l {
+	font-family: "Droid SansFall back";
+	font-size: 72px;
+	color: #FFF;
+	float: left;
+	line-height: 72px;
+	height: 72px;
+}
+#banners .mess .texts .pages .r {
+	font-family: "Droid SansFall back";
+	font-size: 48px;
+	color: #FFF;
+	float: left;
+	line-height: 48px;
+	margin-top: 22px;
+	height: 48px;
+}
+/*** banner 数字样式****/
+.banner_button_num_l{
+	font-family: "Droid SansFall back";
+	font-size: 72px;
+	color: #FFF;
+}
+.banner_button_num_r{
+	font-family: "Droid SansFall back";
+	font-size: 48px;
+	color: #FFF;
+}
+
+#banners .mess .texts .point {
+	position: absolute;
+	top: 128px;
+	height: 30px;
+	right: 12px;
+}
+#banners .mess .texts .point .small {
+	height: 30px;
+	width: 30px;
+	margin-right: 38px;
+	float: left;
+}
+
+#banners .mess .texts .point .small .white {
+	height: 20px;
+	width: 20px;
+	border-radius: 30px; /* 所有角都使用半径为5px的圆角，此属性为CSS3标准属性 */
+	-moz-border-radius: 30px; /* Mozilla浏览器的私有属性 */
+	-webkit-border-radius: 30px;
+	background-color: #FFF;
+	margin: 5px;
+}
+
+#banners .mess .texts .point .big {
+	height: 30px;
+	width: 30px;
+	margin-right: 38px;
+	float: left;
+}
+
+#banners .mess .texts .point .big .white {
+	height: 30px;
+	width: 30px;
+	border-radius: 30px; /* 所有角都使用半径为5px的圆角，此属性为CSS3标准属性 */
+	-moz-border-radius: 30px; /* Mozilla浏览器的私有属性 */
+	-webkit-border-radius: 30px;
+	background-color: #FFF;
+}
+
+.titles {
+	padding-right: 40px;
+	padding-left: 40px;
+	height: 94px;
+	width: 2480px;
+	margin-top: 40px;
+}
+.titles .icon {
+	height: 40px;
+	width: 40px;
+	max-width: 2560px;
+	float: left;
+	padding-top: 22px;
+	padding-right: 16px;
+	padding-bottom: 32px;
+}
+.titles .title {
+	height: 38px;
+	max-width: 2560px;
+	float: left;
+	padding-top: 22px;
+	padding-bottom: 34px;
+	font-family: "Droid SansFall back";
+	line-height: 40px;
+	color: #FFF;
+	text-decoration: none;
+	font-size: 36px;
+}
+.titles .titlem {
+	height: 38px;
+	float: right;
+	padding-top: 22px;
+	padding-bottom: 34px;
+	font-family: "Droid SansFall back";
+	line-height: 40px;
+	color: #FFF;
+	text-decoration: none;
+	font-size: 36px;
+	padding-right: 20px;
+}
+
+.content {
+	width: 2520px;
+	padding-right: 20px;
+	padding-left: 20px;
+	overflow: hidden;
+}
+.content .history {
+	width: 590px;
+	padding-right: 20px;
+	padding-left: 20px;
+	float: left;
+	height: 332px;
+}
+.content .history .pic {
+	width: 590px;
+	height: 332px;
+}
+.content .history .pic img { width: 100%; height: 100%; }
+
+.content .recommend_01 {
+	width: 464px;
+	padding-right: 20px;
+	padding-left: 20px;
+	float: left;
+}
+.content .recommend_01 .pic {
+	width: 464px;
+	height: 650px;
+}
+.content .recommend_01 .mname {
+	width: 466px;
+	color: #FFF;
+	text-decoration: none;
+	text-align: center;
+	text-shadow: 2px 2px 5px #000;
+	font-family: "Droid SansFall back";
+	font-size: 32px;
+	height: 84px;
+	padding-top: 16px;
+	overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
+	text-overflow:ellipsis;;/* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
+	white-space:nowrap;/* 不换行 */
+}
+.content .recommend_02 {
+	width: 590px;
+	padding-right: 20px;
+	padding-left: 20px;
+	float: left;
+}
+.content .recommend_02 .pic { width: 590px; height: 332px; }
+.content .recommend_02 .mname {
+	width: 590px;
+	height: 84px;
+	color: #FFF;
+	text-decoration: none;
+	text-align: center;
+	text-shadow: 2px 2px 5px #000;
+	font-family: "Droid SansFall back";
+	font-size: 32px;
+	padding-top: 16px;
+	overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */
+	text-overflow:ellipsis;;/* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
+	white-space:nowrap;/* 不换行 */
+}
+
+.content .recommend_01 .pic img { width: 100%; height: 100%; }
+.content .recommend_02 .pic img { width: 100%; height: 100%; }
+
+/**banner 标题和描述样式 **/
+.description {
+  position:absolute;
+  z-index:2;
+  height:70px;
+  left:378px;
+  top:590px;
+}
+.banner_title{
+  font-family: "Droid SansFall back";
+  font-size: 72px;
+  line-height: 72px;
+  color: #FFF;
+}
+.banner_desc{
+	margin-top:16px;
+    font-family: "Droid SansFall back";
+	font-size: 36px;
+	line-height: 36px;
+	color: #FFF;
+}

@@ -1,0 +1,554 @@
+
+
+ 
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="initial-scale=0.5,width=device-width">
+<title></title>
+<link href="../css_js/slider-pro.min.css" rel="stylesheet" type="text/css">
+<link href="../css_js/css.css" rel="stylesheet" type="text/css">
+<link href="../css_js/media.css" rel="stylesheet" type="text/css"> 
+</head>
+<script src="../css_js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="../css_js/jquery.sliderPro.min.js"></script>
+<script type="text/javascript">
+//webview http url
+
+var url = "http://127.0.0.1:15000";
+//本次生成html对应的文件名称
+var file_name = "D:/test/siteData/yoga/154\201609\26\2\530ea2e5-3580-49e3-a7bf-d0cbfe42d758_html\new_html";
+//用户当前是否有历史记录
+var hasHistory  = getQueryString('hasHistory'); 
+//dualhome 版本号
+var dualhomeVersion = getQueryString('dualhomeVersion');
+//标记用户是否确认发起网络请求
+var isNetConnect = getQueryString('NetConnect');
+
+var is_lock = false;
+var timeout = 2000;  //ajax 请求超时时间
+//打开频道列表页
+//portraitflag 1-代表横版海报， 2-竖版海报
+function openChannel(title, channel, portraitflag){
+	var channel_url = "http://sky.tvxio.com/v1_0/SKY/0g0/api/tv/sections/" + channel + "/";
+	var data = {type: "channel", url:channel_url, title:title, channel:channel, portraitflag:portraitflag};
+	doAjax(data);
+}
+
+//更多历史记录
+function moreHistory(){
+	var data = {type: "morehistories"};
+	doAjax(data);
+}
+
+//ajax 请求
+var retryCount = 0; //重试次数
+function doAjax(data){
+	showMask(); //loading
+	//isFilter=true 表示所有的ajax请求都通过webview 拦截之后
+	//webview 直接调用vod的方法唤起vod
+	//data['isFilter'] = 'true';
+	try{	
+		if(!is_lock){
+			console.log('request start' + new Date().getMilliseconds());
+			is_lock = true;
+		 $.ajax({
+				  type: "GET",
+				  url: url,
+				  timeout: timeout,
+				  data:data,
+				  dataType: "jsonp",
+				  jsonpCallback:"callback",
+				  success:function(json){
+					  //释放loading
+					  hideMask();
+					  //响应成功释放loading
+					  console.log("request success, result:"+json);
+				  },
+				  error:function(xhq, e){
+					  is_lock = false;
+					  //连续6次失败，则不再重试，并且释放loading
+					  if(retryCount < 6){
+						  console.log("request retryCount:"+retryCount);
+						  retryCount ++;
+						  doAjax(data);
+					  }else{
+						  retryCount = 0;
+						  hideMask();
+					  }
+					  console.log("request error: " + e + ", url:" + url);
+					  console.log("request error param " + JSON.stringify(data));
+					  console.log("request error :" + JSON.stringify(xhq));
+				  },
+				  complete:function(xhq, status){
+					  is_lock = false;
+					  console.log("detail ajax done, status:"+status+",is_lock:" + is_lock);
+				  }
+			  });
+		}
+		
+	}catch(e){
+		$("#china").text(e.message);
+	} 
+	
+}
+//详情页
+function detail(item_url, model_name, content_model, channel_name){
+	var isPlay = true;
+	//item-详情,section-列表, clip-播放
+	if("clip" == model_name){
+		isPlay = false;  //直接播放时表示没有详情页
+	}
+	//产品包，当model_name = package, 设置content_model = package
+	//跳转至产品包
+	if("package" == model_name){
+		content_model = "package";
+	}
+	var data = {type: "detail", url:item_url, expense:isPlay, content_model:content_model, channel_name:channel_name};
+	doAjax(data);
+}
+
+//加载历史记录
+function loadHistory(){
+	
+	console.log("isNetConnect:" + isNetConnect);
+	if(isNetConnect == 'false' || 'false' == hasHistory){
+		return;
+	}
+	//获取用户历史记录
+	try{
+		$.ajax({
+			  type: "GET",
+			  url: url,
+			  data:{type:'history'},
+			  timeout:timeout,
+			  dataType: "jsonp",
+			  jsonpCallback:"callback",
+			  success: function(json){
+				  
+				  //如果没有历史记录则隐藏
+				  if(!json){
+					  $("#historys").hide();
+				  }else{
+				   //解析历史记录
+				   $("#historys").show();
+				   var history = "";
+				   
+				   var historyList = jQuery.parseJSON(json.historyList);
+				   $("#historysContent").html(""); //每次清空历史记录重新加载
+				   $.each(historyList,function(index, his){
+					   var data;
+					   if(typeof his == 'string'){
+						   data = jQuery.parseJSON(his);
+					   }else{
+						   data = his;
+					   }
+					   //取4条记录
+					   if(index < 4){
+						 //电视剧对应url, 如果电视剧对应url 没有则去itemurl
+						   var itemUrl = data.sub_url;
+						   var imageUrl = data.adlet_url;
+						   if(itemUrl == '' || itemUrl == null || itemUrl == undefined){
+							   itemUrl = data.url;
+						   }
+						   history += '<div class="history"><div class="pic"><a  href="javaScript:detail(\''+itemUrl+'\',\'clip\',\''+data.content_model+'\',\'\')"><img src="'+imageUrl+'" onerror="this.src=\'images/default_history.png\'" width="590" height="332"></a></div></div>';      
+					   }
+				   });
+				   //加载默认历史内容
+				   if(historyList.length < 4){
+					   for(var i = 0; i < (4 - historyList.length); i ++){
+						   history += '<div class="history"><div class="pic"><a  href="javaScript:;"><img src="images/default_history.png" width="590" height="332"></a></div></div>';
+					   }
+				   }
+				   
+				   $("#historysContent").html(history);
+				  
+				  }
+			  },
+			  error:function(XMLHttpRequest, textStatus, errorThrown){
+				  //alert(textStatus);
+			  }
+			});
+		setTimeout('loadHistory()', 1000 * 60 * 5); //5分钟更新一次历史记录
+	}catch(e){
+		$("#historysContent").text(e.Message);
+	}
+}
+
+//获取上一个幻灯片的下标
+function getPreSlideIndex(slider){
+	  var preIndex;
+	  var totalSlides = slider.getTotalSlides(); //幻灯片总数
+	  var curSlides = slider.getSelectedSlide(); //当前换的片下标 0开始
+	  if(curSlides - 1 >= 0){
+		  preIndex = curSlides - 1;
+	  }else{
+		  preIndex = totalSlides - 1;
+	  }
+	  //alert(preIndex);
+	  return preIndex;
+}
+//获取下个幻灯片的下标
+function getNextSlideIndex(slider){
+	 var nextIndex;
+	 var totalSlides = slider.getTotalSlides();
+	 var curSlides = slider.getSelectedSlide();
+	 if(curSlides + 1 <= totalSlides - 1){
+		 nextIndex = curSlides + 1;
+	 }else{
+		 nextIndex = 0;
+	 }
+	 //alert(nextIndex);
+	 return nextIndex;
+}
+
+//幻灯片绑定点击事件
+//左右两个绑定幻灯片切换事件，中间绑定启动vod事件
+function bindPreNextEvent(slider){
+	
+	var preIndex = getPreSlideIndex(slider);
+	var nextIndex = getNextSlideIndex(slider);
+	var curSlides = slider.getSelectedSlide(); //当前换的片下标 0开始
+	$('.sp-slide').each(function(index){
+		//打开vod所需参数
+		var banner_url = $(this).attr('banner-url');
+		var banner_model_name = $(this).attr('banner-model-name');
+		var banner_content_model = $(this).attr('banner-content-model');
+		var banner_channel_name = $(this).attr('banner-channel-name'); //频道
+		//清除所有事件
+		$(this).unbind();
+		//绑定打开vod 事件
+		if(index == curSlides){
+			$(this).on('click',function(){
+				detail(banner_url, banner_model_name, banner_content_model, banner_channel_name);
+			});
+		}
+		//绑定上一个幻灯片事件
+		if(index == preIndex){
+			$(this).on('click',function(){
+				slider.gotoSlide(preIndex);
+			});
+		}
+		//绑定下个幻灯平事件
+		if(index == nextIndex){
+			$(this).on('click',function(){
+				slider.gotoSlide(nextIndex);
+				//slider.startAutoplay();
+			});
+		}
+		
+	});
+}
+
+$(document).ready(function($) {
+		//如果用户有历史记录并且网络设置开启，则打开历史记录占位
+	    if('true' == isNetConnect && 'true' == hasHistory){
+	    	$("#historys").show();
+	    }
+		$( '#banner' ).sliderPro({
+			width: 1902,
+			height:740,
+			//aspectRatio: 2.5,  //图片宽高比
+			slideDistance:40, //幻灯片间隔
+			slideAnimationDuration:700, //滑动持续时间
+			autoplayDelay:9000,  //自动播放延迟时间
+			//arrows:true,   //箭头按钮
+			autoplay: true,
+			touchSwipe:false,  //是否触摸滑动
+			fadeCaption:true,
+			visibleSize: '100%',
+			forceSize: 'fullWidth'
+		});
+		//获取幻灯片对象
+		var slider = $('#banner').data( 'sliderPro' );
+		
+		bindPreNextEvent(slider); //上个和下个幻灯点击事件绑定
+		//添加幻灯片滑事件
+		$( '#banner' ).on('gotoSlide', function( event ) {
+		    //修改按钮中的数字
+		    var totalSlides = slider.getTotalSlides();
+			var curSlides = slider.getSelectedSlide();
+			bindPreNextEvent(slider); //上个和下个幻灯点击事件绑定
+			
+			$('.sp_index').html('<font class="banner_button_num_l">'+(curSlides + 1) + '</font><font class="banner_button_num_r">/' + totalSlides + "</font>");
+			//切换banner描述
+			$('.description').each(function(index){
+			  if(curSlides == index){
+			    $(this).show();
+			  }else{
+			    $(this).hide();
+			  }
+			});
+		});
+		 //加载历史记录
+	    loadHistory();
+	});
+//定时刷新历史记录
+//setTimeout('loadHistory()', 1000); //延迟1秒更新历史记录
+ 
+    //显示遮罩层    
+    function showMask(){
+    	$("body").eq(0).css("overflow","hidden");
+        $("#mask").css("top", $(document).scrollTop());
+        $("#mask").css("height",1600);     
+        $("#mask").css("width",2560);
+        $("#mask").show();     
+    }  
+    //隐藏遮罩层  
+    function hideMask(){
+    	$("body").eq(0).css("overflow","");
+        $("#mask").hide();     
+    }  
+   
+    //输出日志文件信息,连续点击若干次展示，再点击隐藏
+    var click_count = 0;
+    function logInfo(){
+    	if(click_count == 10){
+    		$( "#dialog" ).text(file_name + ',ip:' + url + ',hasHistory:' + hasHistory + ',dualhomeVersion:' + dualhomeVersion + ',isNetConnect:' + isNetConnect);
+    		click_count = 0;
+    	}else{
+    		$( "#dialog" ).text("精选推荐");
+    		click_count ++;
+    	}
+    	
+    }
+    //获取请求参数
+    function getQueryString(name) { 
+    	var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i"); 
+    	var r = window.location.search.substr(1).match(reg); 
+    	if (r != null) return unescape(r[2]); return null; 
+    } 
+  
+    
+</script>
+<body>
+
+<div id="mask" style="display:none;" class="mask"><img id="loadingImg" width="2560px" height="1600px" src="images/loading.gif"></div>   
+<div id="header">
+  <div class="navs">
+	  <div class="btns"><a id="china" href="javaScript:openChannel('华语电影','chinesemovie','2');">华语电影</a></div>
+	  <div class="btns"><a id="film" href="javaScript:openChannel('海外电影','overseas','2');">海外电影</a></div>
+	  <div class="btns"><a href="javaScript:openChannel('综艺娱乐','variety','1');">综艺娱乐</a></div>
+	  <div class="btns"><a href="javaScript:openChannel('电视剧','teleplay','1');">电视剧</a></div>
+	  <div class="btns"><a href="javaScript:openChannel('音乐','music','1');"> 音乐 </a></div>
+	  <div class="btns"><a href="javaScript:openChannel('游戏','game','1');"> 游戏 </a></div>
+	  <div class="btns"><a href="javaScript:openChannel('体育','sport','1');"> 体育 </a></div>
+	  <div class="btns"><a href="javaScript:openChannel('少儿','comic','1');"> 少儿 </a></div>
+	  <div class="btns"><a href="javaScript:openChannel('生活纪实','documentary','1');">生活纪实</a></div>
+  </div>
+</div>
+<div id="banner" class="slider-pro">
+     <div class="sp-slides">
+        
+          <div class="sp-slide" banner-url="http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/700715/" banner-channel-name="game" banner-model-name="clip" banner-content-model="game">
+			<a href="javaScript:;" target="_blank"><img class="sp-image" src="images/20160420/0628yogayouxihuayuanzhanzheng.jpg" data-src="images/20160420/0628yogayouxihuayuanzhanzheng.jpg" data-retina="images/20160420/0628yogayouxihuayuanzhanzheng.jpg"/></a>
+		 </div>
+        
+          <div class="sp-slide" banner-url="http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/701962/" banner-channel-name="teleplay" banner-model-name="item" banner-content-model="teleplay">
+			<a href="javaScript:;" target="_blank"><img class="sp-image" src="images/20160420/yuzui2160628.jpg" data-src="images/20160420/yuzui2160628.jpg" data-retina="images/20160420/yuzui2160628.jpg"/></a>
+		 </div>
+        
+          <div class="sp-slide" banner-url="http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/702040/" banner-channel-name="chinesemovie" banner-model-name="item" banner-content-model="movie">
+			<a href="javaScript:;" target="_blank"><img class="sp-image" src="images/20160420/dt2.jpg" data-src="images/20160420/dt2.jpg" data-retina="images/20160420/dt2.jpg"/></a>
+		 </div>
+        
+          <div class="sp-slide" banner-url="http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/700565/" banner-channel-name="overseas" banner-model-name="item" banner-content-model="movie">
+			<a href="javaScript:;" target="_blank"><img class="sp-image" src="images/20160420/dt1.jpg" data-src="images/20160420/dt1.jpg" data-retina="images/20160420/dt1.jpg"/></a>
+		 </div>
+        
+          <div class="sp-slide" banner-url="http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/702389/" banner-channel-name="variety" banner-model-name="item" banner-content-model="variety">
+			<a href="javaScript:;" target="_blank"><img class="sp-image" src="images/20160420/20160628yule1902740.jpg" data-src="images/20160420/20160628yule1902740.jpg" data-retina="images/20160420/20160628yule1902740.jpg"/></a>
+		 </div>
+        
+       
+	</div>
+	 
+	  
+	    <div class = "description">
+	  
+	  
+		   <div class="banner_title">植物大战僵尸花园战争2</div>
+		   <div class="banner_desc">简介：
+					
+		             喜闻乐见的打僵尸又来啦！《植物大战僵尸：花园战争2》第一视角实况解说...
+		           
+						
+		  </div>
+		</div>
+	  
+	 
+	  
+	  
+	    <div class = "description" style="display:none">
+	  
+		   <div class="banner_title">余罪第二季</div>
+		   <div class="banner_desc">简介：
+					
+		             张一山热血转型演技大爆发，从单纯的“刘星”逆袭成卧底老司机！改编自常...
+		           
+						
+		  </div>
+		</div>
+	  
+	 
+	  
+	  
+	    <div class = "description" style="display:none">
+	  
+		   <div class="banner_title">大唐玄奘</div>
+		   <div class="banner_desc">简介：
+					
+		             十九年风霜载誉归，三千里黄沙铸不朽。一心求法何所惧，百折不回向西行。...
+		           
+						
+		  </div>
+		</div>
+	  
+	 
+	  
+	  
+	    <div class = "description" style="display:none">
+	  
+		   <div class="banner_title">幻体：续命游戏</div>
+		   <div class="banner_desc">简介：
+					
+		             一绝症老头大玩“换身体”游戏，重返年轻肉身大开“杀”戒。年逾古稀的富...
+		           
+						
+		  </div>
+		</div>
+	  
+	 
+	  
+	  
+	    <div class = "description" style="display:none">
+	  
+		   <div class="banner_title">奔跑吧兄弟4跑男变机器人</div>
+		   <div class="banner_desc">简介：
+					
+		             奔跑吧兄弟第四季20160624，跑男集体变“机器人”，挑战“垂直马...
+		           
+						
+		  </div>
+		</div>
+	  
+	 
+</div>
+
+
+
+<!-- 用户历史记录 -->
+<div id="historys" style="display:none">
+<div  class="titles">
+  <div class="icon"><img src="images/icon_1.png" width="40" height="40"></div>
+  <div class="title">历史记录</div>
+  <div class="titlem" onclick="moreHistory()">查看更多</div>
+</div>
+<div class="content" id="historysContent">
+ <div class="history"><div class="pic"><a  href="javaScript:;"><img src="images/default_history.png" width="590" height="332"></a></div></div>
+ <div class="history"><div class="pic"><a  href="javaScript:;"><img src="images/default_history.png" width="590" height="332"></a></div></div>
+ <div class="history"><div class="pic"><a  href="javaScript:;"><img src="images/default_history.png" width="590" height="332"></a></div></div>
+ <div class="history"><div class="pic"><a  href="javaScript:;"><img src="images/default_history.png" width="590" height="332"></a></div></div>
+</div>
+</div>
+
+<div class="titles">
+  <div class="icon"><img src="images/icon_2.png" alt="" width="40" height="40"></div>
+  <div class="title" id="dialog" onclick="logInfo()" >精选推荐</div>
+</div>
+<div class="content">
+ 
+  <div class="recommend_01">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/700103/','item','teleplay','teleplay')"><img src="images/20160420/haoxiansheng160628.jpg" width="464" height="650" alt=""></a></div>
+    <div class="mname">好先生</div>
+  </div>
+ 
+  <div class="recommend_01">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/701893/','item','movie','chinesemovie')"><img src="images/20160420/hb1.jpg" width="464" height="650" alt=""></a></div>
+    <div class="mname">北京遇上西雅图2</div>
+  </div>
+ 
+  <div class="recommend_01">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/686071/','item','movie','chinesemovie')"><img src="images/20160420/hb2.jpg" width="464" height="650" alt=""></a></div>
+    <div class="mname">我的少女时代</div>
+  </div>
+ 
+  <div class="recommend_01">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/695257/','item','movie','chinesemovie')"><img src="images/20160420/hb3.jpg" width="464" height="650" alt=""></a></div>
+    <div class="mname">澳门风云3</div>
+  </div>
+ 
+  <div class="recommend_01">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/700196/','item','movie','overseas')"><img src="images/20160420/hb4.jpg" width="464" height="650" alt=""></a></div>
+    <div class="mname">危机十三小时</div>
+  </div>
+ 
+  
+   
+  <div class="recommend_02">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/694665/','clip','game','music')" ><img src="images/20160420/0628yogayouxilol.jpg" width="590" height="332" alt="" ></a></div>
+     <div class="mname">周杰伦LOL主题曲</div>
+  </div>
+  
+  <div class="recommend_02">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/697712/','item','teleplay','teleplay')" ><img src="images/20160420/zuihaodewomen160628.jpg" width="590" height="332" alt="" ></a></div>
+     <div class="mname">最好的我们</div>
+  </div>
+  
+  <div class="recommend_02">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/700106/','item','teleplay','teleplay')" ><img src="images/20160420/nvqiang160628.jpg" width="590" height="332" alt="" ></a></div>
+     <div class="mname">女不强大天不容</div>
+  </div>
+  
+  <div class="recommend_02">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/702025/','item','trailer','overseas')" ><img src="images/20160420/ht1.jpg" width="590" height="332" alt="" ></a></div>
+     <div class="mname">三人行 预告合集</div>
+  </div>
+  
+  <div class="recommend_02">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/699409/','item','trailer','overseas')" ><img src="images/20160420/ht2.jpg" width="590" height="332" alt="" ></a></div>
+     <div class="mname">独立日2 超长预告</div>
+  </div>
+  
+  <div class="recommend_02">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/672837/','clip','sport','variety')" ><img src="images/20160420/niurenjingcaituijianyoga0628hh.jpg" width="590" height="332" alt="" ></a></div>
+     <div class="mname">牛人逆天绝技大合集</div>
+  </div>
+  
+  <div class="recommend_02">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/704035/','clip','sport','sport')" ><img src="images/20160711/upload/20160420/yogaouzhoubeiershi0713hh.jpg" width="590" height="332" alt="" ></a></div>
+     <div class="mname">2016欧洲杯20大进球</div>
+  </div>
+  
+  <div class="recommend_02">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/702447/','item','variety','variety')" ><img src="images/20160420/20160628yulejxtz590332.jpg" width="590" height="332" alt="" ></a></div>
+     <div class="mname">极限挑战2 重走人生路</div>
+  </div>
+  
+  <div class="recommend_02">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/702433/','item','variety','variety')" ><img src="images/20160420/20160628yulehynt590332.jpg" width="590" height="332" alt="" ></a></div>
+     <div class="mname">花样男团 郭德纲饿到发飙</div>
+  </div>
+  
+  <div class="recommend_02">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/696287/','item','documentary','documentary')" ><img src="images/20160420/duchangjiemi0628.jpg" width="590" height="332" alt="" ></a></div>
+     <div class="mname">黑幕：赌场揭秘</div>
+  </div>
+  
+  <div class="recommend_02">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/702512/','clip','music','music')" ><img src="images/20160420/20160628yinyuelady590332.jpg" width="590" height="332" alt="" ></a></div>
+     <div class="mname">胡子叔《少年勇者团》</div>
+  </div>
+  
+  <div class="recommend_02">
+    <div class="pic"><a href="javaScript:detail('http://sky.tvxio.com/v2_0/YOGA/tog0/api/item/702191/','clip','music','music')" ><img src="images/20160420/20160628yinyue2sistar590332.jpg" width="590" height="332" alt="" ></a></div>
+     <div class="mname">韩女团最新热辣单曲</div>
+  </div>
+  
+ 
+</div>
+</body>
+
+</html>
