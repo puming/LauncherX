@@ -1,1 +1,1 @@
-include ':launcherx', ':wallpaperpick'
+include ':launcherx', ':wallpaperpick', ':left'

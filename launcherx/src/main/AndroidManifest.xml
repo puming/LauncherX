@@ -21,7 +21,7 @@
 
     <uses-sdk
         android:minSdkVersion="16"
-        android:targetSdkVersion="21" />
+        android:targetSdkVersion="23" />
 
     <permission
         android:name="com.android.launcher.permission.INSTALL_SHORTCUT"
@@ -102,32 +102,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LauncherExtension"
-            android:clearTaskOnLaunch="true"
-            android:enabled="false"
-            android:launchMode="singleTask"
-            android:screenOrientation="nosensor"
-            android:stateNotNeeded="true"
-            android:theme="@style/Theme"
-            android:windowSoftInputMode="adjustPan">
+            android:name=".WallpaperCropActivity"
+            android:finishOnCloseSystemDialogs="true"
+            android:icon="@mipmap/ic_launcher_wallpaper"
+            android:label="@string/crop_wallpaper"
+            android:process=":wallpaper_chooser"
+            android:theme="@style/Theme.WallpaperCropper">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.HOME" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.MONKEY" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".ToggleWeightWatcher"
-            android:enabled="@bool/debug_memory_enabled"
-            android:icon="@mipmap/ic_launcher_home"
-            android:label="@string/toggle_weight_watcher">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.service.wallpaper.CROP_AND_SET_WALLPAPER" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
+
+                <data android:mimeType="image/*" />
             </intent-filter>
         </activity>
         <activity
@@ -144,40 +130,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".WallpaperCropActivity"
-            android:finishOnCloseSystemDialogs="true"
-            android:icon="@mipmap/ic_launcher_wallpaper"
-            android:label="@string/crop_wallpaper"
-            android:process=":wallpaper_chooser"
-            android:theme="@style/Theme.WallpaperCropper">
-            <intent-filter>
-                <action android:name="android.service.wallpaper.CROP_AND_SET_WALLPAPER" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="image/*" />
-            </intent-filter>
-        </activity>
-
-        <!-- Debugging tools -->
-        <activity
-            android:name=".MemoryDumpActivity"
-            android:enabled="@bool/debug_memory_enabled"
-            android:excludeFromRecents="true"
-            android:icon="@mipmap/ic_launcher_home"
-            android:label="@string/debug_memory_activity"
-            android:theme="@android:style/Theme.NoDisplay">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <service
-            android:name=".MemoryTracker"
-            android:enabled="@bool/debug_memory_enabled"></service>
+            android:name=".SettingsActivity"
+            android:autoRemoveFromRecents="true"
+            android:label="@string/settings_button_text"
+            android:process=":settings_process"
+            android:theme="@android:style/Theme.Material.Wallpaper"></activity>
 
         <receiver android:name=".WallpaperChangedReceiver">
             <intent-filter>
@@ -245,12 +202,61 @@
             android:name="android.nfc.disable_beam_default"
             android:value="true" />
 
-        <activity android:name=".SettingsActivity"
-            android:label="@string/settings_button_text"
-            android:autoRemoveFromRecents="true"
-            android:theme="@android:style/Theme.Material.Wallpaper"
-            android:process=":settings_process">
+        <!--Debugging tools -->
+        <!--
+        <activity
+        android:name=".MemoryDumpActivity"
+        android:enabled="@bool/debug_memory_enabled"
+        android:excludeFromRecents="true"
+        android:icon="@mipmap/ic_launcher_home"
+        android:label="@string/debug_memory_activity"
+        android:theme="@android:style/Theme.NoDisplay">
+        <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
         </activity>
+        -->
+        <!--
+        <service
+        android:name=".MemoryTracker"
+        android:enabled="@bool/debug_memory_enabled"></service>
+        -->
+
+        <activity
+            android:name=".LauncherExtension"
+            android:clearTaskOnLaunch="true"
+            android:enabled="false"
+            android:launchMode="singleTask"
+            android:screenOrientation="nosensor"
+            android:stateNotNeeded="true"
+            android:theme="@style/Theme"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.MONKEY" />
+            </intent-filter>
+        </activity>
+        <!--
+        <activity
+        android:name=".ToggleWeightWatcher"
+        android:enabled="@bool/debug_memory_enabled"
+        android:icon="@mipmap/ic_launcher_home"
+        android:label="@string/toggle_weight_watcher">
+        <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
+       -->
+
     </application>
 
 </manifest>

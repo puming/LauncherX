@@ -31,8 +31,37 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
+import android.view.animation.DecelerateInterpolator;
 
-class FastBitmapDrawable extends Drawable {
+public class FastBitmapDrawable extends Drawable {
+
+    /**
+     * puming add
+     * The possible states that a FastBitmapDrawable can be in.
+     */
+    public enum State {
+
+        NORMAL                      (0f, 0f, 1f, new DecelerateInterpolator()),
+        PRESSED                     (0f, 100f / 255f, 1f, CLICK_FEEDBACK_INTERPOLATOR),
+        FAST_SCROLL_HIGHLIGHTED     (0f, 0f, 1.15f, new DecelerateInterpolator()),
+        FAST_SCROLL_UNHIGHLIGHTED   (0f, 0f, 1f, new DecelerateInterpolator()),
+        DISABLED                    (1f, 0.5f, 1f, new DecelerateInterpolator());
+
+        public final float desaturation;
+        public final float brightness;
+        /**
+         * Used specifically by the view drawing this FastBitmapDrawable.
+         */
+        public final float viewScale;
+        public final TimeInterpolator interpolator;
+
+        State(float desaturation, float brightness, float viewScale, TimeInterpolator interpolator) {
+            this.desaturation = desaturation;
+            this.brightness = brightness;
+            this.viewScale = viewScale;
+            this.interpolator = interpolator;
+        }
+    }
 
     static final TimeInterpolator CLICK_FEEDBACK_INTERPOLATOR = new TimeInterpolator() {
 

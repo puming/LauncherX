@@ -63,6 +63,9 @@ public final class Utilities {
     private static final Rect sOldBounds = new Rect();
     private static final Canvas sCanvas = new Canvas();
 
+    public static final boolean ATLEAST_JB_MR1 =
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1;
+
     static {
         sCanvas.setDrawFilter(new PaintFlagsDrawFilter(Paint.DITHER_FLAG,
                 Paint.FILTER_BITMAP_FLAG));
@@ -543,5 +546,12 @@ public final class Utilities {
             }
         }
         return defaultWidgetForSearchPackage;
+    }
+
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    public static boolean isRtl(Resources res) {
+        return ATLEAST_JB_MR1 &&
+                (res.getConfiguration().getLayoutDirection() == View.LAYOUT_DIRECTION_RTL);
     }
 }

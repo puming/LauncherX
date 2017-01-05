@@ -193,6 +193,7 @@ public class LauncherExtension extends Launcher {
 
         @Override
         public void populateCustomContentContainer() {
+
         }
 
         @Override

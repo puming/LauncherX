@@ -68,6 +68,7 @@ import android.os.StrictMode;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -108,6 +109,7 @@ import com.android.launcherx.compat.PackageInstallerCompat;
 import com.android.launcherx.compat.PackageInstallerCompat.PackageInstallInfo;
 import com.android.launcherx.compat.UserHandleCompat;
 import com.android.launcherx.compat.UserManagerCompat;
+import com.android.launcherx.left.LeftView;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -359,7 +361,12 @@ public class Launcher extends Activity
     private Canvas mFolderIconCanvas;
     private Rect mRectForFolderAnimation = new Rect();
 
+    //puming add
+    private DeviceProfile mDeviceProfile;
+
     private BubbleTextView mWaitingForResume;
+    //puming add
+    private LeftView mLeftView = null;
 
     private Runnable mBuildLayersRunnable = new Runnable() {
         public void run() {
@@ -415,6 +422,9 @@ public class Launcher extends Activity
         LauncherAppState.setApplicationContext(getApplicationContext());
         LauncherAppState app = LauncherAppState.getInstance();
         LauncherAppState.getLauncherProvider().setLauncherProviderChangeListener(this);
+
+        //puming add
+        // TODO: 2017/1/5   mDeviceProfile
 
         // Lazy-initialize the dynamic grid
         DeviceProfile grid = app.initDynamicGrid(this);
@@ -502,6 +512,7 @@ public class Launcher extends Activity
             showFirstRunActivity();
             showFirstRunClings();
         }
+
     }
 
     private LauncherCallbacks mLauncherCallbacks;
@@ -544,15 +555,16 @@ public class Launcher extends Activity
         if (mLauncherCallbacks != null) {
             mLauncherCallbacks.populateCustomContentContainer();
         }
-        //puming add
-        View leftView = LayoutInflater.from(this).inflate(R.layout.left_screen_layout, null);
 
-        mWorkspace.addToCustomContentPage(leftView, new CustomContentCallbacks() {
+        //puming add
+        mLeftView=new LeftView(this);
+        mWorkspace.addToCustomContentPage(mLeftView, new CustomContentCallbacks() {
             @Override
             public void onShow(boolean fromResume) {
                 if (!fromResume) {
                     lockScreenOrientation();
                 }
+                mLeftView.bindRecyclerView();
                /* if (mYogaWebview != null) {
                     mYogaWebview.openService();
                 }*/
@@ -560,6 +572,7 @@ public class Launcher extends Activity
 
             @Override
             public void onHide() {
+                mLeftView.unbindRecyclerView();
                /* if (mYogaWebview != null) {
                     mYogaWebview.FreshView();
                 }*/
@@ -577,7 +590,6 @@ public class Launcher extends Activity
             }
         }, "CustomView");
         //end
-
     }
 
     /**
@@ -2001,6 +2013,11 @@ public class Launcher extends Activity
         return mSharedPrefs;
     }
 
+    //puming add
+    public DeviceProfile getDeviceProfile() {
+        return mDeviceProfile;
+    }
+
     public void closeSystemDialogs() {
         getWindow().closeAllPanels();
 
@@ -3281,7 +3298,6 @@ public class Launcher extends Activity
         if (v.getTag() instanceof ItemInfo) {
             ItemInfo info = (ItemInfo) v.getTag();
             longClickCellInfo = new CellLayout.CellInfo(v, info);
-            ;
             itemUnderLongClick = longClickCellInfo.cell;
             resetAddInfo();
         }
@@ -5292,8 +5308,7 @@ public class Launcher extends Activity
         }
     }
 }
-
-interface LauncherTransitionable {
+/*interface LauncherTransitionable {
     View getContent();
 
     void onLauncherTransitionPrepare(Launcher l, boolean animated, boolean toWorkspace);
@@ -5303,7 +5318,7 @@ interface LauncherTransitionable {
     void onLauncherTransitionStep(Launcher l, float t);
 
     void onLauncherTransitionEnd(Launcher l, boolean animated, boolean toWorkspace);
-}
+}*/
 
 interface DebugIntents {
     static final String DELETE_DATABASE = "com.android.launcherx.action.DELETE_DATABASE";
