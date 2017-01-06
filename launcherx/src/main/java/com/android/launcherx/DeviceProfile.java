@@ -89,7 +89,7 @@ public class DeviceProfile {
 
     int widthPx;
     int heightPx;
-    int availableWidthPx;
+    public int availableWidthPx;
     int availableHeightPx;
     int defaultPageSpacingPx;
 

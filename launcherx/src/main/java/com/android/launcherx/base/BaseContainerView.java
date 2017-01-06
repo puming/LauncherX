@@ -68,9 +68,7 @@ public abstract class BaseContainerView extends FrameLayout implements Insettabl
 
         int maxSize = getResources().getDimensionPixelSize(R.dimen.container_max_width);
         int minMargin = getResources().getDimensionPixelSize(R.dimen.container_min_margin);
-//        int width = ((Launcher) context).getDeviceProfile().availableWidthPx;
-        int width=0;
-        // TODO: 2017/1/5  width
+        int width = ((Launcher) context).getDeviceProfile().availableWidthPx;
         if (maxSize > 0) {
             mHorizontalPadding = Math.max(minMargin, (width - maxSize) / 2);
         } else {
