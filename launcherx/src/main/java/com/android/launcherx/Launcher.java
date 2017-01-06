@@ -425,6 +425,7 @@ public class Launcher extends Activity
 
         // Lazy-initialize the dynamic grid
         DeviceProfile grid = app.initDynamicGrid(this);
+
         //puming add
         mDeviceProfile = grid;
         // the LauncherApplication should call this, but in case of Instrumentation it might not be present yet
