@@ -423,12 +423,10 @@ public class Launcher extends Activity
         LauncherAppState app = LauncherAppState.getInstance();
         LauncherAppState.getLauncherProvider().setLauncherProviderChangeListener(this);
 
-        //puming add
-        // TODO: 2017/1/5   mDeviceProfile
-
         // Lazy-initialize the dynamic grid
         DeviceProfile grid = app.initDynamicGrid(this);
-
+        //puming add
+        mDeviceProfile = grid;
         // the LauncherApplication should call this, but in case of Instrumentation it might not be present yet
         mSharedPrefs = getSharedPreferences(LauncherAppState.getSharedPreferencesKey(),
                 Context.MODE_PRIVATE);
