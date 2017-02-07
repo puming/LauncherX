@@ -40,7 +40,11 @@ import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Binder;
+import android.os.Bundle;
+import android.os.Process;
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
@@ -227,6 +231,53 @@ public class LauncherProvider extends ContentProvider {
         if (count > 0) sendNotify(uri);
 
         return count;
+    }
+
+    @Nullable
+    @Override
+    public Bundle call(String method, String arg, Bundle extras) {
+        if (Binder.getCallingUid() != Process.myUid()) {
+            return null;
+        }
+
+        boolean b = extras.getBoolean(LauncherSettings.Settings.EXTRA_VALUE);
+        Log.d(TAG, "call: value="+b);
+        switch (method) {
+            case LauncherSettings.Settings.METHOD_GET_BOOLEAN: {
+                Bundle result = new Bundle();
+                if (Utilities.ALLOW_ROTATION_PREFERENCE_KEY.equals(arg)) {
+                    result.putBoolean(LauncherSettings.Settings.EXTRA_VALUE,
+                            Utilities.isAllowRotationPrefEnabled(getContext()));
+                } else if(Utilities.SINGLE_LAYER_PREFERENCE_KEY.equals(arg)){
+                    Log.d(TAG, "call: "+Utilities.SINGLE_LAYER_PREFERENCE_KEY);
+                    boolean slValue = Utilities.getPrefs(getContext()).getBoolean(Utilities.SINGLE_LAYER_PREFERENCE_KEY,true);
+                    result.putBoolean(LauncherSettings.Settings.EXTRA_VALUE, slValue);
+                } else if(Utilities.LEFT_SCREEN_PREFERENCE_KEY.equals(arg)){
+                    Log.d(TAG, "call: "+Utilities.LEFT_SCREEN_PREFERENCE_KEY);
+                    boolean lsValue = Utilities.getPrefs(getContext()).getBoolean(Utilities.LEFT_SCREEN_PREFERENCE_KEY,true);
+                    result.putBoolean(LauncherSettings.Settings.EXTRA_VALUE,lsValue);
+                } else {
+                    result.putBoolean(LauncherSettings.Settings.EXTRA_VALUE,
+                            Utilities.getPrefs(getContext()).getBoolean(arg, extras.getBoolean(
+                                    LauncherSettings.Settings.EXTRA_DEFAULT_VALUE)));
+                }
+                return result;
+            }
+            case LauncherSettings.Settings.METHOD_SET_BOOLEAN: {
+                boolean value = extras.getBoolean(LauncherSettings.Settings.EXTRA_VALUE);
+                Utilities.getPrefs(getContext()).edit().putBoolean(arg, value).apply();
+                if (mListener != null) {
+                    mListener.onSettingsChanged(arg, value);
+                }
+                if (extras.getBoolean(LauncherSettings.Settings.NOTIFY_BACKUP)) {
+//                    LauncherBackupAgentHelper.dataChanged(getContext());
+                }
+                Bundle result = new Bundle();
+                result.putBoolean(LauncherSettings.Settings.EXTRA_VALUE, value);
+                return result;
+            }
+        }
+        return null;
     }
 
     private void sendNotify(Uri uri) {

@@ -535,6 +535,32 @@ public class Launcher extends Activity
         }
     }
 
+    @Override
+    public void onSettingsChanged(String key,boolean value){
+        Log.d(TAG, "onSettingsChanged: key="+key);
+        switch (key){
+            case Utilities.ALLOW_ROTATION_PREFERENCE_KEY:
+                break;
+            case Utilities.LEFT_SCREEN_PREFERENCE_KEY:
+//                invalidateHasCustomContentToLeft();
+                reStartLauncher();
+                break;
+            case Utilities.SINGLE_LAYER_PREFERENCE_KEY:
+                reStartLauncher();
+                break;
+        }
+    }
+
+    /**
+     * 修改了Launcher的设置，应该重新启动Launcher
+     */
+    private void reStartLauncher() {
+        finish();
+        Intent intent=new Intent();
+        intent.setComponent(new ComponentName(this,"com.android.launcherx.Launcher"));
+        startActivity(intent);
+    }
+
     /**
      * To be overridden by subclasses to hint to Launcher that we have custom content
      */
@@ -542,7 +568,7 @@ public class Launcher extends Activity
         if (mLauncherCallbacks != null) {
             return mLauncherCallbacks.hasCustomContentToLeft();
         }
-        return true;
+        return Utilities.getPrefs(this).getBoolean(Utilities.LEFT_SCREEN_PREFERENCE_KEY,true);
     }
 
     /**
@@ -1268,7 +1294,8 @@ public class Launcher extends Activity
         if (mLauncherCallbacks != null) {
             return mLauncherCallbacks.hasSettings();
         }
-        return !getResources().getBoolean(R.bool.allow_rotation);
+        boolean b = !getResources().getBoolean(R.bool.allow_rotation);
+        return true;
     }
 
 

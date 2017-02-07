@@ -29,6 +29,7 @@ import android.database.ContentObserver;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Handler;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -277,7 +278,8 @@ public class LauncherAppState implements DeviceProfile.DeviceProfileCallbacks {
         // Returns false on non-dogfood builds.
         boolean b = getInstance().mBuildInfo.isDogfoodBuild() &&
                 Utilities.isPropertyEnabled(Launcher.DISABLE_ALL_APPS_PROPERTY);
-        return b;
+        return Utilities.getPrefs(sContext).getBoolean(Utilities.SINGLE_LAYER_PREFERENCE_KEY,true);
+
     }
 
     public static boolean isDogfoodBuild() {

@@ -23,7 +23,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile project(':wallpaperpick')
-    compile 'com.squareup.leakcanary:leakcanary-android:1.5'
+//    compile 'com.squareup.leakcanary:leakcanary-android:1.5'
 //    compile 'com.android.support:design:23.0.1'
 //    compile 'com.android.support:cardview-v7:23.0.1'
 //    compile 'com.android.support:recyclerview-v7:23.0.1'

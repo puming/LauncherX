@@ -25,6 +25,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -56,6 +57,8 @@ import java.util.ArrayList;
 public final class Utilities {
     private static final String TAG = "Launcher.Utilities";
     public static final String ALLOW_ROTATION_PREFERENCE_KEY = "pref_allowRotation";
+    public static final String SINGLE_LAYER_PREFERENCE_KEY = "pref_single_layer";
+    public static final String LEFT_SCREEN_PREFERENCE_KEY = "pref_left_screen";
 
     private static int sIconWidth = -1;
     private static int sIconHeight = -1;
@@ -106,6 +109,24 @@ public final class Utilities {
         boolean enableRotation = sForceEnableRotation ||
                 c.getResources().getBoolean(R.bool.allow_rotation);
         return enableRotation;
+    }
+
+    public static boolean isAllowRotationPrefEnabled(Context context){
+        boolean allowRotationPref = false;
+//        if (ATLEAST_N) {
+//            // If the device was scaled, used the original dimensions to determine if rotation
+//            // is allowed of not.
+//            int originalDensity = DisplayMetrics.DENSITY_DEVICE_STABLE;
+//            Resources res = context.getResources();
+//            int originalSmallestWidth = res.getConfiguration().smallestScreenWidthDp
+//                    * res.getDisplayMetrics().densityDpi / originalDensity;
+//            allowRotationPref = originalSmallestWidth >= 600;
+//        }
+        return getPrefs(context).getBoolean(ALLOW_ROTATION_PREFERENCE_KEY, allowRotationPref);
+    }
+
+    public static SharedPreferences getPrefs(Context context){
+        return context.getSharedPreferences(LauncherFiles.SHARED_PREFERENCES_KEY,Context.MODE_PRIVATE);
     }
 
     /**

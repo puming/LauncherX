@@ -304,4 +304,6 @@ s -->
         You can remove it, or search for the app and install it manually.
     </string>
     <string name="allow_rotation_title">Allow rotation</string>
+    <string name="single_layer_title">Open single layer</string>
+    <string name="left_screen_title">Open left screen</string>
 </resources>

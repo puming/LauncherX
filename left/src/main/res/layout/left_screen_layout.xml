@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <include layout="@layout/left_image_switch_layout" />
+        <!--<include layout="@layout/left_image_switch_layout" />-->
     </LinearLayout>
 
 

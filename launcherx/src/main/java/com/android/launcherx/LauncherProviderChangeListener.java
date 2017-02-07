@@ -8,4 +8,5 @@ package com.android.launcherx;
 public interface LauncherProviderChangeListener {
 
     public void onLauncherProviderChange();
+    void onSettingsChanged(String key,boolean value);
 }
