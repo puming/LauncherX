@@ -6,3 +6,5 @@ build
 /local.properties
 .gitignore
 *gen
+/yarn.lock
+node_modules/
