@@ -1,5 +1,6 @@
 package com.android.launcherx;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -25,7 +26,7 @@ public interface LauncherCallbacks {
      * Activity life-cycle methods. These methods are triggered after
      * the code in the corresponding Launcher method is executed.
      */
-    public void preOnCreate();
+    public void preOnCreate(Activity activity);
     public void onCreate(Bundle savedInstanceState);
     public void preOnResume();
     public void onResume();
@@ -42,6 +43,9 @@ public interface LauncherCallbacks {
     public void dump(String prefix, FileDescriptor fd, PrintWriter w, String[] args);
     public void onHomeIntent();
     public boolean handleBackPressed();
+    void onRequestPermissionsResult(int requestCode,
+                                    String[] permissions,
+                                    int[] grantResults);
 
     /*
      * Extension points for providing custom behavior on certain user interactions.
@@ -105,4 +109,6 @@ public interface LauncherCallbacks {
     public Launcher.LauncherOverlay setLauncherOverlayView(InsettableFrameLayout container,
             Launcher.LauncherOverlayCallbacks callbacks);
 
+
+    View getLeftView();
 }

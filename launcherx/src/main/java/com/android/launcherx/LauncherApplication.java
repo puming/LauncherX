@@ -18,9 +18,60 @@ package com.android.launcherx;
 
 import android.app.Application;
 
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactNativeHost;
+import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
+import com.facebook.react.devsupport.RedBoxHandler;
+import com.facebook.react.shell.MainReactPackage;
+import com.facebook.soloader.SoLoader;
+
+import java.util.Arrays;
+import java.util.List;
+
+import javax.annotation.Nullable;
+
 //import com.squareup.leakcanary.LeakCanary;
 
-public class LauncherApplication extends Application {
+public class LauncherApplication extends Application implements ReactApplication {
+
+    private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+        @Override
+        public boolean getUseDeveloperSupport() {
+            return BuildConfig.DEBUG;
+        }
+
+        @Override
+        protected List<ReactPackage> getPackages() {
+            return Arrays.<ReactPackage>asList(
+                    new MainReactPackage()
+            );
+        }
+
+        @Override
+        protected String getJSMainModuleName() {
+            return "index";
+        }
+
+        @Nullable
+        @Override
+        protected String getJSBundleFile() {
+            return super.getJSBundleFile();
+        }
+
+        @Nullable
+        @Override
+        protected JavaScriptExecutorFactory getJavaScriptExecutorFactory() {
+            return super.getJavaScriptExecutorFactory();
+        }
+
+        @Nullable
+        @Override
+        protected RedBoxHandler getRedBoxHandler() {
+            return super.getRedBoxHandler();
+        }
+    };
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -29,11 +80,18 @@ public class LauncherApplication extends Application {
 //        if(!LeakCanary.isInAnalyzerProcess(this)){
 //            LeakCanary.install(this);
 //        }
+        SoLoader.init(this, /* native exopackage */ false);
+
     }
 
     @Override
     public void onTerminate() {
         super.onTerminate();
         LauncherAppState.getInstance().onTerminate();
+    }
+
+    @Override
+    public ReactNativeHost getReactNativeHost() {
+        return mReactNativeHost;
     }
 }

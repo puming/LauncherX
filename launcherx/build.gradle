@@ -9,7 +9,19 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+
+        ndk {
+//            moduleName "jniutil"
+            abiFilters 'armeabi', 'x86', 'armeabi-v7a'
+        }
+    }
+    splits {
+        abi {
+            reset()
+//            enable enableSeparateBuildPerCPUArchitecture
+            universalApk false  // If true, also generate a universal APK
+            include "armeabi-v7a", "x86"
+        }
     }
     buildTypes {
         release {

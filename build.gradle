@@ -15,6 +15,12 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        mavenLocal()
+        maven {
+            // 这里是指定所依赖的 React Native 是来自从 npm 安装来的 /node_modules 目录，
+            // 因为 Maven 中央仓库里的 React Native 可能不是最新的。
+            url "$rootDir/react/node_modules/react-native/android"
+        }
     }
 }
 

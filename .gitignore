@@ -6,5 +6,6 @@ build
 /local.properties
 .gitignore
 *gen
-/yarn.lock
-node_modules/
+/react/yarn.lock
+/react/node_modules/
+captures/

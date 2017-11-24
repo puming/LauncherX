@@ -366,7 +366,7 @@ public class Launcher extends Activity
 
     private BubbleTextView mWaitingForResume;
     //puming add
-    private LeftView mLeftView = null;
+    private View mLeftView = null;
 
     private Runnable mBuildLayersRunnable = new Runnable() {
         public void run() {
@@ -410,9 +410,10 @@ public class Launcher extends Activity
                     .build());
         }
 
+        setLauncherCallbacks(new LauncherExtensionCallbacks());
         if (mLauncherCallbacks != null) {
             Log.d(TAG, "onCreate: mLauncherCallbacks != null");
-            mLauncherCallbacks.preOnCreate();
+            mLauncherCallbacks.preOnCreate(this);
         } else {
             Log.d(TAG, "onCreate: mLauncherCallbacks == null");
         }
@@ -566,7 +567,7 @@ public class Launcher extends Activity
      */
     protected boolean hasCustomContentToLeft() {
         if (mLauncherCallbacks != null) {
-            return mLauncherCallbacks.hasCustomContentToLeft();
+//            return mLauncherCallbacks.hasCustomContentToLeft();
         }
         return Utilities.getPrefs(this).getBoolean(Utilities.LEFT_SCREEN_PREFERENCE_KEY,true);
     }
@@ -582,14 +583,17 @@ public class Launcher extends Activity
         }
 
         //puming add
-        mLeftView=new LeftView(this);
+        if(mLauncherCallbacks==null){
+            return;
+        }
+        mLeftView=mLauncherCallbacks.getLeftView();
         mWorkspace.addToCustomContentPage(mLeftView, new CustomContentCallbacks() {
             @Override
             public void onShow(boolean fromResume) {
                 if (!fromResume) {
                     lockScreenOrientation();
                 }
-                mLeftView.bindRecyclerView();
+//                mLeftView.bindRecyclerView();
                /* if (mYogaWebview != null) {
                     mYogaWebview.openService();
                 }*/
@@ -597,7 +601,7 @@ public class Launcher extends Activity
 
             @Override
             public void onHide() {
-                mLeftView.unbindRecyclerView();
+//                mLeftView.unbindRecyclerView();
                /* if (mYogaWebview != null) {
                     mYogaWebview.FreshView();
                 }*/
@@ -1292,7 +1296,7 @@ public class Launcher extends Activity
 
     protected boolean hasSettings() {
         if (mLauncherCallbacks != null) {
-            return mLauncherCallbacks.hasSettings();
+//            return mLauncherCallbacks.hasSettings();
         }
         boolean b = !getResources().getBoolean(R.bool.allow_rotation);
         return true;
